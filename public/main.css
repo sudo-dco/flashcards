@@ -1,0 +1,12 @@
+.card {
+    perspective: 1000px;
+}
+
+.card-flip {
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.card-flip[show="true"] {
+    transform: rotateY(180deg); 
+}
