@@ -1,21 +1,25 @@
 import React, { useState } from "react";
 import axios from 'axios';
 
-const Form = ({ toast }) => {
+const Form = ({ toast, auth }) => {
     const [questionInput, setQuestionInput] = useState("");
     const [answerInput, setAnswerInput] = useState("");
 
     const addQuestion = (e) => {
         e.preventDefault();
-        axios.post("/add", {
-            question: questionInput,
-            answer: answerInput
-        });
-
-        setQuestionInput("");
-        setAnswerInput("");
-
-        toast();
+        if (auth) {
+            axios.post("/add", {
+                question: questionInput,
+                answer: answerInput
+            });
+    
+            setQuestionInput("");
+            setAnswerInput("");
+    
+            toast("Question Added!");
+        } else {
+            toast("Not Authorized")
+        }
     };
 
     const handleInput = ({ target }) => {
