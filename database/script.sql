@@ -8,3 +8,8 @@ CREATE TABLE trivia(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
     answer TEXT NOT NULL);
+
+CREATE TABLE users(
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL);
