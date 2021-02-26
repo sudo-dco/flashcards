@@ -3,16 +3,19 @@ import axios from "axios";
 import Card from "./Card.jsx"
 import Form from "./Form.jsx";
 
-function Home() {
+function Home({ auth }) {
     const [trivia, setTrivia] = useState(null);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [message, setMessage] = useState("");
 
     const getQuestion = async () => {
         const result = await axios.get("/get");
         setTrivia(result.data);
     };
 
-    const showToast = () => {
+    const showToast = (msg) => {
+        setMessage(`${msg}`);
+
         const option = {
             animation: true,
             autohide: true,
@@ -50,14 +53,14 @@ function Home() {
                             next={getQuestion}
                         />
                     }
-                    <Form toast={showToast}/>
+                    <Form auth={auth} toast={showToast}/>
                 </div>
                 
             </div>
             <div className="toast hide align-items-center position-absolute m-5 top-0 end-0 bg-white border-primary" role="alert" aria-live="assertive" aria-atomic="true">
                 <div className="d-flex">
                     <div className="toast-body">
-                        Question Added!
+                        {msg}
                     </div>
                     <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
