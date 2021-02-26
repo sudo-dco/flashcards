@@ -60,7 +60,7 @@ function Home({ auth }) {
             <div className="toast hide align-items-center position-absolute m-5 top-0 end-0 bg-white border-primary" role="alert" aria-live="assertive" aria-atomic="true">
                 <div className="d-flex">
                     <div className="toast-body">
-                        {msg}
+                        {message}
                     </div>
                     <button type="button" className="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
