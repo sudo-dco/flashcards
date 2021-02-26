@@ -51,8 +51,45 @@ const addQuestion = (question, answer) => {
     );
 };
 
+// returns array of result obj
+const findUser = (username) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            "SELECT * FROM `users` WHERE `username` = ?",
+            [username],
+            (error, results) => {
+                if (error) {
+                    console.error("Error retrieving user from DB");
+                    reject(error);
+                }
+
+                resolve(results[0]);
+            }
+        );
+    });
+};
+
+const findById = (id) => {
+    return new Promise((resolve, reject) => {
+        db.query(
+            "SELECT * FROM `users` WHERE `id` = ?",
+            [id],
+            (error, results) => {
+                if (error) {
+                    console.error("Error retrieving user from DB");
+                    reject(error);
+                }
+
+                resolve(results[0]);
+            }
+        );
+    });
+};
+
 module.exports = {
     getQuestion,
     addQuestion,
     getCount,
+    findUser,
+    findById,
 };
