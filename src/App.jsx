@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import Home from "./Home.jsx";
 import Login from "./Login.jsx";
+import Signup from "./Signup.jsx";
 
 
 function App() {
@@ -18,6 +19,9 @@ function App() {
 
     return (
             <Switch>
+                <Route path="/signup">
+                    <Signup />
+                </Route>
                 <Route path="/home">
                     <Home auth={isAuth} />
                 </Route>
