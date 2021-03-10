@@ -47,10 +47,10 @@ const addUser = (username, password) => {
     });
 };
 
-const getCount = () => {
+const getCount = (username) => {
     return new Promise((resolve, reject) => {
         db.query(
-            "SELECT COUNT(id) as value FROM `trivia`",
+            `SELECT COUNT(id) as value FROM ${username}_trivia`,
             (error, results) => {
                 if (error) {
                     console.error("Error retrieving count from DB");
@@ -62,10 +62,10 @@ const getCount = () => {
     });
 };
 
-const getQuestion = (number) => {
+const getQuestion = (username, number) => {
     return new Promise((resolve, reject) => {
         db.query(
-            "SELECT * FROM `trivia` WHERE `id` = ?",
+            `SELECT * FROM ${username}_trivia WHERE id = ?`,
             [number],
             (error, results) => {
                 if (error) {
@@ -78,9 +78,9 @@ const getQuestion = (number) => {
     });
 };
 
-const addQuestion = (question, answer) => {
+const addQuestion = (username, question, answer) => {
     db.query(
-        `INSERT INTO trivia (question, answer) VALUES ('${question}', '${answer}')`,
+        `INSERT INTO ${username}_trivia (question, answer) VALUES ('${question}', '${answer}')`,
         (error, results) => {
             if (error) {
                 console.error("Error adding question to DB", error);
