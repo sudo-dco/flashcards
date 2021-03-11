@@ -6,9 +6,10 @@ const db = require("../database/db");
 
 const app = express();
 const port = process.env.PORT || 3000;
+const signUpCode = "testcode1234";
 
-const getRandomNum = async () => {
-    const count = await db.getCount();
+const getRandomNum = async (username) => {
+    const count = await db.getCount(username);
     const min = 1;
     const max = count.value;
 
@@ -20,22 +21,24 @@ app.use(passport.session());
 app.use(express.json());
 app.use(express.static("public"));
 
-// app.get("/", (req, res) => {
-//     res.render(path.join(__dirname, "..", "public", "index.html"), {
-//         user: req.user,
-//     });
-// });
+app.get("/get/:user", async (req, res) => {
+    const { user } = req.params;
 
-app.get("/get", async (req, res) => {
-    const number = await getRandomNum();
-    const question = await db.getQuestion(number);
-    res.status(200).send(question[0]);
+    if (user) {
+        const number = await getRandomNum(user);
+        const question = await db.getQuestion(user, number);
+        res.status(200).send(question[0]);
+    }
 });
 
-app.post("/add", (req, res) => {
+app.post("/add/:user", (req, res) => {
+    const { user } = req.params;
     const { question, answer } = req.body;
-    db.addQuestion(question, answer);
-    res.sendStatus(200);
+
+    if (user) {
+        db.addQuestion(user, question, answer);
+        res.sendStatus(200);
+    }
 });
 
 app.post("/login", passport.authenticate("local"), (req, res) => {
@@ -43,6 +46,31 @@ app.post("/login", passport.authenticate("local"), (req, res) => {
         isAuthenticated: true,
         user: req.user.username,
     });
+});
+
+app.post("/signup", async (req, res) => {
+    const { username, password, code } = req.body;
+
+    if (code !== signUpCode) {
+        return res.status(200).send("invalid_code");
+    }
+
+    const userCheck = await db.findUser(username);
+
+    if (userCheck !== undefined) {
+        return res.status(200).send("username_taken");
+    }
+
+    db.addUser(username, password)
+        .then((result) => {
+            return db.createTable(username);
+        })
+        .then((result) => {
+            res.sendStatus(200).send("account_created");
+        })
+        .catch((error) => {
+            res.status(200).send(error);
+        });
 });
 
 app.get("/*", (req, res) => {
