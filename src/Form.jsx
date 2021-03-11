@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import axios from 'axios';
 
-const Form = ({ toast, auth }) => {
+const Form = ({ toast, user }) => {
     const [questionInput, setQuestionInput] = useState("");
     const [answerInput, setAnswerInput] = useState("");
 
     const addQuestion = (e) => {
         e.preventDefault();
-        if (auth) {
-            axios.post("/add", {
+        if (user.isAuth) {
+            axios.post(`/add/${user.name}`, {
                 question: questionInput,
                 answer: answerInput
             });
