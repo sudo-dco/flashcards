@@ -6,14 +6,40 @@ const db = require("../database/db");
 
 const app = express();
 const port = process.env.PORT || 3000;
+
 const signUpCode = "testcode1234";
+const userQuestionList = {};
 
-const getRandomNum = async (username) => {
+const generateIdList = async (username) => {
+    const ids = [];
+
     const count = await db.getCount(username);
-    const min = 1;
-    const max = count.value;
 
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    for (let i = 1; i <= count.value; i++) {
+        ids.push(i);
+    }
+
+    userQuestionList[username] = ids;
+};
+
+const getQuestionId = async (username) => {
+    // create array of ids in user's trivia table
+    // pull ids out of array until there's no more left and then recreate array
+
+    if (
+        !userQuestionList[username] ||
+        userQuestionList[username].length === 0
+    ) {
+        await generateIdList(username);
+    }
+
+    const randomIndex = Math.floor(
+        Math.random() * (userQuestionList[username].length - 0 + 1) + 0
+    );
+
+    const id = userQuestionList[username].splice(randomIndex, 1);
+
+    return id[0];
 };
 
 app.use(passport.initialize());
@@ -24,8 +50,10 @@ app.use(express.static("public"));
 app.get("/get/:user", async (req, res) => {
     const { user } = req.params;
 
+    // add check for existing username
+
     if (user) {
-        const number = await getRandomNum(user);
+        const number = await getQuestionId(user);
         const question = await db.getQuestion(user, number);
         res.status(200).send(question[0]);
     }
