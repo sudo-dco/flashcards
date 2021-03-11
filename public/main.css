@@ -1,4 +1,16 @@
-.card {
+html, body {
+    height: 100%;
+}
+
+#app {
+    height: 100%;
+}
+
+.logged-in {
+    font-size: 10px;
+}
+
+/* .card {
     perspective: 1000px;
 }
 
@@ -9,4 +21,4 @@
 
 .card-flip[show="true"] {
     transform: rotateY(180deg); 
-}
+} */
