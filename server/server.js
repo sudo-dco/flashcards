@@ -94,9 +94,10 @@ app.post("/signup", async (req, res) => {
             return db.createTable(username);
         })
         .then((result) => {
-            res.sendStatus(200).send("account_created");
+            return res.status(200).send("account_created");
         })
         .catch((error) => {
+            console.log(error);
             res.status(200).send(error);
         });
 });
