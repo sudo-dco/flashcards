@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require("express-session");
 const path = require("path");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
@@ -42,29 +43,40 @@ const getQuestionId = async (username) => {
     return id[0];
 };
 
+app.use(
+    session({
+        secret: "testsecret1234",
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
 app.use(express.static("public"));
 
-app.get("/get/:user", async (req, res) => {
-    const { user } = req.params;
+app.get("/get", async (req, res) => {
+    const { username } = req.user;
+    console.log("get route user obj: ", username);
 
     // add check for existing username
 
-    if (user) {
-        const number = await getQuestionId(user);
-        const question = await db.getQuestion(user, number);
+    if (username) {
+        const number = await getQuestionId(username);
+        const question = await db.getQuestion(username, number);
         res.status(200).send(question[0]);
     }
 });
 
-app.post("/add/:user", (req, res) => {
+app.post("/add", (req, res) => {
+    const { username } = req.user;
     const { user } = req.params;
     const { question, answer } = req.body;
 
-    if (user) {
-        db.addQuestion(user, question, answer);
+    console.log("add route user obj: ", username);
+
+    if (username) {
+        db.addQuestion(username, question, answer);
         res.sendStatus(200);
     }
 });
@@ -72,8 +84,18 @@ app.post("/add/:user", (req, res) => {
 app.post("/login", passport.authenticate("local"), (req, res) => {
     res.json({
         isAuthenticated: true,
-        user: req.user.username,
     });
+});
+
+app.get("/checkAuth", (req, res) => {
+    if (req.user) {
+        res.send({
+            user: username,
+            isAuthenticated: true,
+        });
+    } else {
+        res.send({ isAuthenticated: false });
+    }
 });
 
 app.post("/signup", async (req, res) => {
@@ -116,7 +138,10 @@ passport.use(
                 if (result.password !== password) {
                     return done(null, false, { message: "Incorrect password" });
                 }
-                return done(null, result);
+                return done(null, {
+                    id: result.id,
+                    username: result.username,
+                });
             })
             .catch((error) => {
                 return done(error);
@@ -131,22 +156,15 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => {
     db.findById(id)
         .then((result) => {
-            return done(null, result);
+            return done(null, {
+                id: result.id,
+                username: result.username,
+            });
         })
         .catch((error) => {
             return done(error);
         });
 });
-
-// app.get("/count", async (req, res) => {
-//     const result = await db.getCount();
-//     res.status(200).send(result);
-// });
-
-// app.get("/number", async (req, res) => {
-//     const number = await db.getRandomNum();
-//     res.status(200).send({ number });
-// });
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
