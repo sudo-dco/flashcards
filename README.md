@@ -164,17 +164,6 @@ Project Link: [https://github.com/sudo-dco/flashcards](https://github.com/sudo-d
 
 
 
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-* []()
-* []()
-* []()
-
-
-
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/sudo-dco/flashcards.svg?style=for-the-badge
