@@ -38,10 +38,9 @@
   <h3 align="center">Cloud Flash Cards</h3>
 
   <p align="center">
-    I'm currently studying data structures and algorithms in preparation for my software engineering interviews, 
-    but I was finding it hard to retain information without revisiting it frequently so I decided to utilize flashcards to help me.
-    The problem was that I couldn't find a reliable flash card website and I didn't want to install something as heavy as Anki so I quickly
-    developed my own barebones flash card system just as a challenge to myself.
+    I'm currently studying data structures and algorithms in preparation for software engineering interviews, 
+    but I was finding it hard to retain information without having a system in place to help me revisit previously studied topics, which is where the flashcard system came in.
+    The problem was that I wanted something online that was easy to use so I could study anywhere and anytime without needing to be at my desk, but I couldn't really find anything out there that fit my needs so I decided to make my own!
     <br />
     <a href="https://github.com/sudo-dco/flashcards"><strong>Explore the docs »</strong></a>
     <br />
