@@ -158,7 +158,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Daniel Co - [@twitter_handle](https://twitter.com/twitter_handle) - thisisdco@gmail.com
+Daniel Co - thisisdco@gmail.com
 
 Project Link: [https://github.com/sudo-dco/flashcards](https://github.com/sudo-dco/flashcards)
 
@@ -177,15 +177,15 @@ Project Link: [https://github.com/sudo-dco/flashcards](https://github.com/sudo-d
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/sudo-dco/repo.svg?style=for-the-badge
-[contributors-url]: https://github.com/sudo-dco/repo/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/sudo-dco/repo.svg?style=for-the-badge
-[forks-url]: https://github.com/sudo-dco/repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/sudo-dco/repo.svg?style=for-the-badge
-[stars-url]: https://github.com/sudo-dco/repo/stargazers
-[issues-shield]: https://img.shields.io/github/issues/sudo-dco/repo.svg?style=for-the-badge
-[issues-url]: https://github.com/sudo-dco/repo/issues
-[license-shield]: https://img.shields.io/github/license/sudo-dco/repo.svg?style=for-the-badge
-[license-url]: https://github.com/sudo-dco/repo/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/sudo-dco/flashcards.svg?style=for-the-badge
+[contributors-url]: https://github.com/sudo-dco/flashcards/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/sudo-dco/flashcards.svg?style=for-the-badge
+[forks-url]: https://github.com/sudo-dco/flashcards/network/members
+[stars-shield]: https://img.shields.io/github/stars/sudo-dco/flashcards.svg?style=for-the-badge
+[stars-url]: https://github.com/sudo-dco/flashcards/stargazers
+[issues-shield]: https://img.shields.io/github/issues/sudo-dco/flashcards.svg?style=for-the-badge
+[issues-url]: https://github.com/sudo-dco/flashcards/issues
+[license-shield]: https://img.shields.io/github/license/sudo-dco/flashcards.svg?style=for-the-badge
+[license-url]: https://github.com/sudo-dco/flashcards/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/sudo-dco
