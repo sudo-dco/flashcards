@@ -1,4 +1,6 @@
 const mysql = require("mysql");
+const session = require("express-session");
+const MySQLStore = require("express-mysql-session")(session);
 
 const localDB = {
     host: "localhost",
@@ -6,12 +8,29 @@ const localDB = {
     database: "flashcards",
 };
 
+const sessionOptions = {
+    clearExpired: true,
+    checkExpirationInterval: 900000,
+    expiration: 86400000,
+    createDatabaseTable: true,
+    schema: {
+        tableName: "sessions",
+        columnNames: {
+            session_id: "session_id",
+            expires: "expires",
+            data: "data",
+        },
+    },
+};
+
 const db = mysql.createConnection(process.env.JAWSDB_URL || localDB);
+const sessionStore = new MySQLStore(sessionOptions, db);
 
 const createTable = (username) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `CREATE TABLE ${username}_trivia (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, question TEXT NOT NULL, answer TEXT NOT NULL)`,
+            "CREATE TABLE ?? (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, question TEXT NOT NULL, answer TEXT NOT NULL)",
+            [`${username}_trivia`],
             (error, results) => {
                 if (error) {
                     console.error(
@@ -50,7 +69,8 @@ const addUser = (username, password) => {
 const getCount = (username) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT COUNT(id) as value FROM ${username}_trivia`,
+            "SELECT COUNT(id) as value FROM ??",
+            [`${username}_trivia`],
             (error, results) => {
                 if (error) {
                     console.error("Error retrieving count from DB");
@@ -65,8 +85,8 @@ const getCount = (username) => {
 const getQuestion = (username, number) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `SELECT * FROM ${username}_trivia WHERE id = ?`,
-            [number],
+            "SELECT * FROM ?? WHERE id = ?",
+            [`${username}_trivia`, number],
             (error, results) => {
                 if (error) {
                     console.error("Error retrieving question from DB");
@@ -80,11 +100,25 @@ const getQuestion = (username, number) => {
 
 const addQuestion = (username, question, answer) => {
     db.query(
-        `INSERT INTO ${username}_trivia (question, answer) VALUES ('${question}', '${answer}')`,
+        "INSERT INTO ?? (question, answer) VALUES (?, ?)",
+        [`${username}_trivia`, question, answer],
         (error, results) => {
             if (error) {
                 console.error("Error adding question to DB", error);
             }
+            console.log(results);
+        }
+    );
+};
+
+const deleteQuestion = (username, id) => {
+    db.query(
+        "DELETE FROM ?? WHERE id = ?",
+        [`${username}_trivia`, id],
+        (error, results) => {
+            if (error)
+                console.error("Error deleting question from DB: ", error);
+
             console.log(results);
         }
     );
@@ -130,7 +164,10 @@ module.exports = {
     addUser,
     getQuestion,
     addQuestion,
+    deleteQuestion,
     getCount,
     findUser,
     findById,
+    session,
+    sessionStore,
 };
