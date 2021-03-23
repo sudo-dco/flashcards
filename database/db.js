@@ -112,16 +112,17 @@ const addQuestion = (username, question, answer) => {
 };
 
 const deleteQuestion = (username, id) => {
-    db.query(
-        "DELETE FROM ?? WHERE id = ?",
-        [`${username}_trivia`, id],
-        (error, results) => {
-            if (error)
-                console.error("Error deleting question from DB: ", error);
+    return new Promise((resolve, reject) => {
+        db.query(
+            "DELETE FROM ?? WHERE id = ?",
+            [`${username}_trivia`, id],
+            (error, results) => {
+                if (error) reject(error);
 
-            console.log(results);
-        }
-    );
+                resolve(results);
+            }
+        );
+    });
 };
 
 // returns array of result obj
@@ -135,7 +136,6 @@ const findUser = (username) => {
                     console.error("Error retrieving user from DB");
                     reject(error);
                 }
-
                 resolve(results[0]);
             }
         );
