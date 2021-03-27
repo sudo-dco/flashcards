@@ -61,12 +61,10 @@ app.get("/question", async (req, res) => {
     if (req.user) {
         const { username } = req.user;
         const number = await getQuestionId(username);
+        // returns RowDataPacket { id: 2, question: 'test2', answer: 'test2' }
         const question = await db.getQuestion(username, number);
-        result = {
-            id: question[0][id],
-            question: question[0][question],
-            answer: question[0][answer],
-        };
+
+        result = question[0];
     } else {
         result = "Not authorized, please login again.";
     }
@@ -108,7 +106,10 @@ app.delete("/question", (req, res) => {
 });
 
 app.post("/login", passport.authenticate("local"), (req, res) => {
+    const { username } = req.user;
+
     res.json({
+        user: username,
         isAuthenticated: true,
     });
 });
