@@ -7,11 +7,21 @@ function Home({ user, showToast }) {
     const [trivia, setTrivia] = useState(null);
     const [showAnswer, setShowAnswer] = useState(false);
     
-
     const getQuestion = async () => {
-        const result = await axios.get(`/get/${user.name}`);
+        // make sure answer is not showing when moving to next question
+        if (showAnswer) setShowAnswer(false);
+
+        const result = await axios.get("/question");
         setTrivia(result.data);
     };
+
+    const deleteQuestion = async () => {
+        const result = await axios.delete("/question", {
+            id: trivia.id,
+        });
+
+        showToast(result.data);
+    }
 
     const handleFlipButton = () => {
         setShowAnswer(!showAnswer);
@@ -35,6 +45,7 @@ function Home({ user, showToast }) {
                             showAnswer={showAnswer} 
                             handleFlip={handleFlipButton} 
                             next={getQuestion}
+                            del={deleteQuestion}
                         />
                     }
                     <Form user={user} toast={showToast}/>

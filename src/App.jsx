@@ -5,9 +5,10 @@ import {
     useLocation,
     useHistory,
 } from "react-router-dom";
-import Home from "./Home.jsx";
-import Login from "./Login.jsx";
-import Signup from "./Signup.jsx";
+import Home from "./components/Home.jsx";
+import Login from "./components/Login.jsx";
+import Signup from "./components/Signup.jsx";
+import axios from "axios";
 
 
 function App() {
@@ -21,17 +22,37 @@ function App() {
     const location = useLocation();
 
     useEffect(() => {
-        if (user.name === null && location.pathname === "/home") {
-            history.push("/login");
+        if (user.name === null) {
+            checkAuth();
         }
-    })
+    }, []);
 
-    const changeAuth = (name, status) => {
-        if (status === true) {
+    useEffect(() => {
+        // move to homepage if already authenticated
+        if (location.pathname === "/") {
+            if (user.isAuth) {
+                history.push("/home");
+            }
+        }
+
+        if (location.pathname === "/home" && user.isAuth === false) {
+            history.push("/");
+        }
+    }, [user])
+
+    const checkAuth = async (userData) => {
+        let result = userData || null;
+
+        if (!userData) {
+            const res = await axios.get("/checkAuth");
+            result = res.data;
+        }
+
+        if (result.isAuthenticated) {
             setUser({
                 ...user,
-                name: name,
-                isAuth: status,
+                name: result.user,
+                isAuth: result.isAuthenticated,
             });
         }
     }
@@ -63,7 +84,7 @@ function App() {
                     <Home user={user} showToast={showToast} />
                 </Route>
                 <Route path="/">
-                    <Login changeAuth={changeAuth} />
+                    <Login checkAuth={checkAuth} showToast={showToast} />
                 </Route>
             </Switch>
             <div className="toast hide align-items-center position-absolute m-4 top-0 end-0 bg-white border-primary" role="alert" aria-live="assertive" aria-atomic="true">

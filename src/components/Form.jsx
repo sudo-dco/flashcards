@@ -8,7 +8,7 @@ const Form = ({ toast, user }) => {
     const addQuestion = (e) => {
         e.preventDefault();
         if (user.isAuth) {
-            axios.post(`/add/${user.name}`, {
+            axios.post("/question", {
                 question: questionInput,
                 answer: answerInput
             });

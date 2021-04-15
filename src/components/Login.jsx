@@ -2,32 +2,35 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 
-const Login = ({ changeAuth }) => {
+const Login = ({ checkAuth, showToast }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     const history = useHistory();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
 
         if (username.length && password.length) {
-            axios.post("/login", {
-                username,
-                password
-            })
-            .then((response) => {
+            try {
+                const response = await axios.post("/login", {
+                    username,
+                    password,
+                });
+
                 if (response.data.isAuthenticated) {
-                    changeAuth(response.data.user, response.data.isAuthenticated);
+                    await checkAuth(response.data);
+                    // setUsername("");
+                    // setPassword("");
                     history.push("/home");
+                } else {
+                    showToast("Wrong username or password");
                 }
-            })
-            .catch((error) => {
+
+
+            } catch (error) {
                 console.log(error);
-            })
-    
-            setUsername("");
-            setPassword("");
+            }
         }
     };
 
