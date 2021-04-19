@@ -5,41 +5,43 @@ const path = require("path");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const db = require("../database/db");
+const utils = require("./utils");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 const signUpCode = process.env.SIGNUP_CODE;
-const userQuestionList = {};
+let userQuestionList = {};
 
-const generateIdList = async (username) => {
-    const ids = [];
-    const count = await db.getCount(username);
+// const generateIdList = async (username) => {
+//     const ids = [];
+//     const count = await db.getCount(username);
 
-    for (let i = 1; i <= count.value; i++) {
-        ids.push(i);
-    }
+//     for (let i = 1; i <= count.value; i++) {
+//         ids.push(i);
+//     }
 
-    userQuestionList[username] = ids;
-};
+//     userQuestionList[username] = ids;
+//     return ids;
+// };
 
-const getQuestionId = async (username) => {
-    // create array of ids in user's trivia table
-    // pull ids out of array until there's no more left and then recreate array
-    if (
-        !userQuestionList[username] ||
-        userQuestionList[username].length === 0
-    ) {
-        await generateIdList(username);
-    }
+// const getQuestionId = async (username) => {
+//     // create array of ids in user's trivia table
+//     // pull ids out of array until there's no more left and then recreate array
+//     if (
+//         !userQuestionList[username] ||
+//         userQuestionList[username].length === 0
+//     ) {
+//         await generateIdList(username);
+//     }
 
-    const randomIndex = Math.floor(
-        Math.random() * (userQuestionList[username].length - 0 + 1) + 0
-    );
-    const id = userQuestionList[username].splice(randomIndex, 1);
+//     const randomIndex = Math.floor(
+//         Math.random() * (userQuestionList[username].length - 0 + 1) + 0
+//     );
+//     const id = userQuestionList[username].splice(randomIndex, 1);
 
-    return id[0];
-};
+//     return id[0];
+// };
 
 app.use(
     db.session({
@@ -60,9 +62,29 @@ app.get("/question", async (req, res) => {
 
     if (req.user) {
         const { username } = req.user;
-        const number = await getQuestionId(username);
+
+        if (
+            !userQuestionList[username] ||
+            userQuestionList[username].length === 0
+        ) {
+            const userIdCount = await db.getCount(username);
+            userQuestionList[username] = utils.generateIdList(
+                userIdCount.value
+            );
+        }
+
+        const { id, updatedIds } = utils.getQuestionId(
+            userQuestionList[username]
+        );
+        userQuestionList[username] = updatedIds;
+        const question = await db.getQuestion(username, id);
         // returns RowDataPacket { id: 2, question: 'test2', answer: 'test2' }
-        const question = await db.getQuestion(username, number);
+        console.dir({
+            userQuestionList,
+            id,
+            updatedIds,
+            question,
+        });
 
         result = question[0];
     } else {
