@@ -43,16 +43,20 @@ export default {
                 });
             },
             addQuestion: (username, question, answer) => {
-                con.query(
-                    "INSERT INTO ?? (question, answer) VALUES (?, ?)",
-                    [`${username}_trivia`, question, answer],
-                    (error, results) => {
-                        if (error) {
-                            console.error("Error adding question to DB", error);
+                return new Promise((resolve, reject) => {
+                    con.query(
+                        "INSERT INTO ?? (question, answer) VALUES (?, ?)",
+                        [`${username}_trivia`, question, answer],
+                        (error, results) => {
+                            if (error) {
+                                console.error("Error adding question to DB");
+                                reject(error);
+                            }
+                            // console.log(results);
+                            resolve(results);
                         }
-                        console.log(results);
-                    }
-                );
+                    );
+                });
             },
             getQuestion: (username, number) => {
                 return new Promise((resolve, reject) => {
@@ -75,7 +79,7 @@ export default {
                 return new Promise((resolve, reject) => {
                     con.query(str, placeholders, (error, results) => {
                         if (error) {
-                            console.error("Error running query");
+                            console.error("Error running query: ", error);
                             reject(error);
                         }
                         resolve(results);
