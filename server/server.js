@@ -13,36 +13,6 @@ const port = process.env.PORT || 3000;
 const signUpCode = process.env.SIGNUP_CODE;
 let userQuestionList = {};
 
-// const generateIdList = async (username) => {
-//     const ids = [];
-//     const count = await db.getCount(username);
-
-//     for (let i = 1; i <= count.value; i++) {
-//         ids.push(i);
-//     }
-
-//     userQuestionList[username] = ids;
-//     return ids;
-// };
-
-// const getQuestionId = async (username) => {
-//     // create array of ids in user's trivia table
-//     // pull ids out of array until there's no more left and then recreate array
-//     if (
-//         !userQuestionList[username] ||
-//         userQuestionList[username].length === 0
-//     ) {
-//         await generateIdList(username);
-//     }
-
-//     const randomIndex = Math.floor(
-//         Math.random() * (userQuestionList[username].length - 0 + 1) + 0
-//     );
-//     const id = userQuestionList[username].splice(randomIndex, 1);
-
-//     return id[0];
-// };
-
 app.use(
     db.session({
         name: "flashcards.sid",

@@ -82,6 +82,10 @@ const getCount = (username) => {
     });
 };
 
+exports.getAllIds = (username) => {
+    return new Promise((resolve, reject));
+};
+
 const getQuestion = (username, number) => {
     return new Promise((resolve, reject) => {
         db.query(
