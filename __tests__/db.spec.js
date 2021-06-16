@@ -1,8 +1,12 @@
-import dbModule from "../database/db-api";
+import createDbApi from "../database/db-api";
 
-const DB = dbModule.createDbApi("test");
+const DB = createDbApi("test");
 const TEST_DB_NAME = "flashcards-test";
+
 const TEST_USERNAME = "testuser";
+const TEST_USER_ID = 1;
+const TEST_PASSWORD = "testpassword123";
+
 const TEST_TABLE_NAME = `${TEST_USERNAME}_trivia`;
 const TEST_QUESTION = "test question";
 const TEST_ANSWER = "test answer";
@@ -10,6 +14,9 @@ const TEST_QUESTION_ID = 1;
 
 beforeAll(async () => {
     await DB.query("CREATE DATABASE IF NOT EXISTS ??", [`${TEST_DB_NAME}`]);
+    await DB.query("USE ??", [`${TEST_DB_NAME}`]);
+    await DB.trivia.create(TEST_USERNAME);
+    await DB.users.create();
 });
 
 afterAll(async () => {
@@ -18,36 +25,52 @@ afterAll(async () => {
 });
 
 describe("db", () => {
-    it("creates new table with correct name", async () => {
-        // returns an array of matching table names
-        const query = "SHOW TABLES FROM ?? LIKE ?";
+    describe("trivia table", () => {
+        let result;
 
-        await DB.query("USE ??", [`${TEST_DB_NAME}`]);
+        it("adds question to test db", async () => {
+            result = await DB.trivia.add(
+                TEST_USERNAME,
+                TEST_QUESTION,
+                TEST_ANSWER
+            );
 
-        await DB.createTable(TEST_USERNAME);
+            expect(result).not.toBeUndefined();
+        });
 
-        const result = await DB.query(query, [
-            `${TEST_DB_NAME}`,
-            TEST_TABLE_NAME,
-        ]);
+        it("retrieves question from test db", async () => {
+            result = await DB.trivia.get(TEST_USERNAME, TEST_QUESTION_ID);
 
-        expect(result.length).toBeGreaterThan(0);
+            expect(result[0].question).toEqual(TEST_QUESTION);
+            expect(result[0].answer).toEqual(TEST_ANSWER);
+        });
+
+        it("deletes question from test db", async () => {
+            result = await DB.trivia.delete(TEST_USERNAME, TEST_QUESTION_ID);
+
+            expect(result).not.toBeUndefined();
+        });
     });
 
-    it("adds question to test db", async () => {
-        const result = await DB.addQuestion(
-            TEST_USERNAME,
-            TEST_QUESTION,
-            TEST_ANSWER
-        );
+    describe("users table", () => {
+        let result;
 
-        expect(result).not.toBeUndefined();
-    });
+        it("adds user to table", async () => {
+            result = await DB.users.add(TEST_USERNAME, TEST_PASSWORD);
+            // console.log("add user: ", result);
+            expect(result.insertId).toEqual(1);
+        });
 
-    it("retrieves question from test db", async () => {
-        const result = await DB.getQuestion(TEST_USERNAME, TEST_QUESTION_ID);
+        it("finds user by name", async () => {
+            result = await DB.users.get(TEST_USERNAME);
+            // console.log("get user: ", result);
+            expect(result.username).toEqual(TEST_USERNAME);
+        });
 
-        expect(result[0].question).toEqual(TEST_QUESTION);
-        expect(result[0].answer).toEqual(TEST_ANSWER);
+        it("find user by id", async () => {
+            result = await DB.users.getById(TEST_USER_ID);
+            // console.log("user id: ", result);
+            expect(result.id).toEqual(TEST_USER_ID);
+        });
     });
 });
