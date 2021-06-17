@@ -15,8 +15,8 @@ const TEST_QUESTION_ID = 1;
 beforeAll(async () => {
     await DB.query("CREATE DATABASE IF NOT EXISTS ??", [`${TEST_DB_NAME}`]);
     await DB.query("USE ??", [`${TEST_DB_NAME}`]);
-    await DB.trivia.create(TEST_USERNAME);
-    await DB.users.create();
+    await DB.trivia.createTable(TEST_USERNAME);
+    await DB.users.createTable();
 });
 
 afterAll(async () => {

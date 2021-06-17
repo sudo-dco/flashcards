@@ -40,7 +40,7 @@ exports.createDbApi = (env) => {
     const sessionStore = new MySQLStore(sessionOptions, con);
 
     const trivia = {
-        create: (username) => {
+        createTable: (username) => {
             return new Promise((resolve, reject) => {
                 con.query(
                     "CREATE TABLE IF NOT EXISTS ?? (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, question TEXT NOT NULL, answer TEXT NOT NULL)",
@@ -103,10 +103,25 @@ exports.createDbApi = (env) => {
                 );
             });
         },
+        count: (username) => {
+            return new Promise((resolve, reject) => {
+                con.query(
+                    "SELECT COUNT(id) as value FROM ??",
+                    [`${username}_trivia`],
+                    (error, results) => {
+                        if (error) {
+                            console.error("Error retrieving count from DB");
+                            reject(error);
+                        }
+                        resolve(results[0]);
+                    }
+                );
+            });
+        },
     };
 
     const users = {
-        create: () => {
+        createTable: () => {
             return new Promise((resolve, reject) => {
                 con.query(
                     "CREATE TABLE ?? (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL)",
