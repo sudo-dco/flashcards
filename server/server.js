@@ -4,42 +4,15 @@ const express = require("express");
 const path = require("path");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const db = require("../database/db");
+// const db = require("../database/db");
+const db = require("../database/db-api").createDbApi();
+const utils = require("./utils");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 const signUpCode = process.env.SIGNUP_CODE;
-const userQuestionList = {};
-
-const generateIdList = async (username) => {
-    const ids = [];
-    const count = await db.getCount(username);
-
-    for (let i = 1; i <= count.value; i++) {
-        ids.push(i);
-    }
-
-    userQuestionList[username] = ids;
-};
-
-const getQuestionId = async (username) => {
-    // create array of ids in user's trivia table
-    // pull ids out of array until there's no more left and then recreate array
-    if (
-        !userQuestionList[username] ||
-        userQuestionList[username].length === 0
-    ) {
-        await generateIdList(username);
-    }
-
-    const randomIndex = Math.floor(
-        Math.random() * (userQuestionList[username].length - 0 + 1) + 0
-    );
-    const id = userQuestionList[username].splice(randomIndex, 1);
-
-    return id[0];
-};
+let userQuestionList = {};
 
 app.use(
     db.session({
@@ -60,9 +33,29 @@ app.get("/question", async (req, res) => {
 
     if (req.user) {
         const { username } = req.user;
-        const number = await getQuestionId(username);
+
+        if (
+            !userQuestionList[username] ||
+            userQuestionList[username].length === 0
+        ) {
+            const userIdCount = await db.trivia.count(username);
+            userQuestionList[username] = utils.generateIdList(
+                userIdCount.value
+            );
+        }
+
+        const { id, updatedIds } = utils.getQuestionId(
+            userQuestionList[username]
+        );
+        userQuestionList[username] = updatedIds;
+        const question = await db.trivia.get(username, id);
         // returns RowDataPacket { id: 2, question: 'test2', answer: 'test2' }
-        const question = await db.getQuestion(username, number);
+        console.dir({
+            userQuestionList,
+            id,
+            updatedIds,
+            question,
+        });
 
         result = question[0];
     } else {
@@ -79,7 +72,7 @@ app.post("/question", (req, res) => {
     const { question, answer } = req.body;
 
     if (username) {
-        db.addQuestion(username, question, answer);
+        db.trivia.add(username, question, answer);
     }
 
     res.sendStatus(200);
@@ -92,7 +85,7 @@ app.delete("/question", (req, res) => {
     if (req.user) {
         const { username } = req.user;
         try {
-            db.deleteQuestion(username, id);
+            db.trivia.delete(username, id);
             result = "Question Deleted";
         } catch (error) {
             console.error("Error deleting question from DB: ", error);
@@ -134,15 +127,16 @@ app.post("/signup", async (req, res) => {
         return res.status(200).send("invalid_code");
     }
 
-    const userCheck = await db.findUser(username);
+    const userCheck = await db.users.get(username);
 
     if (userCheck !== undefined) {
         return res.status(200).send("username_taken");
     }
 
-    db.addUser(username, password)
+    db.users
+        .add(username, password)
         .then((result) => {
-            return db.createTable(username);
+            return db.trivia.createTable(username);
         })
         .then((result) => {
             return res.status(200).send("account_created");
@@ -159,7 +153,8 @@ app.get("/*", (req, res) => {
 
 passport.use(
     new LocalStrategy((username, password, done) => {
-        db.findUser(username)
+        db.users
+            .get(username)
             .then((result) => {
                 if (result === undefined) {
                     return done(null, false, { message: "Incorrect username" });
@@ -183,7 +178,8 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-    db.findById(id)
+    db.users
+        .getById(id)
         .then((result) => {
             return done(null, {
                 id: result.id,
