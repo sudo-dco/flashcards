@@ -1,4 +1,4 @@
-import createDbApi from "../database/db-api";
+import { createDbApi } from "../database/db-api";
 
 const DB = createDbApi("test");
 const TEST_DB_NAME = "flashcards-test";

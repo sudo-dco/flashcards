@@ -1,4 +1,21 @@
 const mysql = require("mysql");
+const session = require("express-session");
+const MySQLStore = require("express-mysql-session")(session);
+
+const sessionOptions = {
+    clearExpired: true,
+    checkExpirationInterval: 900000,
+    expiration: 86400000,
+    createDatabaseTable: true,
+    schema: {
+        tableName: "sessions",
+        columnNames: {
+            session_id: "session_id",
+            expires: "expires",
+            data: "data",
+        },
+    },
+};
 
 const localDb = {
     host: "localhost",
@@ -11,14 +28,16 @@ const testDb = {
     user: "root",
 };
 
-export default function createDbApi(env) {
+exports.createDbApi = (env) => {
     let con;
 
     if (env === "test") {
         con = mysql.createConnection(testDb);
     } else {
-        con = mysql.createConnection(localDb);
+        con = mysql.createConnection(process.env.JAWSDB_URL || localDb);
     }
+
+    const sessionStore = new MySQLStore(sessionOptions, con);
 
     const trivia = {
         create: (username) => {
@@ -158,6 +177,8 @@ export default function createDbApi(env) {
         con,
         trivia,
         users,
+        session,
+        sessionStore,
         query: (str, placeholders) => {
             return new Promise((resolve, reject) => {
                 con.query(str, placeholders, (error, results) => {
@@ -170,4 +191,4 @@ export default function createDbApi(env) {
             });
         },
     };
-}
+};

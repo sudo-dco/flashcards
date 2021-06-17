@@ -4,7 +4,8 @@ const express = require("express");
 const path = require("path");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const db = require("../database/db");
+// const db = require("../database/db");
+const db = require("../database/db-api").createDbApi();
 const utils = require("./utils");
 
 const app = express();
